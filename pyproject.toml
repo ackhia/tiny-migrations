@@ -1,6 +1,6 @@
 [project]
 name = "tiny-migrations"
-version = "0.1.0"
+version = "0.1.1"
 description = "A tiny, lightweight, package for managing database migrations. Designed to work without INI files or dynamic module loading, making it ideal for compiled or frozen applications as well as traditional servers."
 readme = "README.md"
 authors = [
