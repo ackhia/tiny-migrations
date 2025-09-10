@@ -117,6 +117,16 @@ tm.migrate([migration1, migration2, migration3])
 
 ---
 
+## Stamping Migrations
+
+You can mark a migration as applied without actually running its `up` method using the `stamp` feature. This is useful when you want to record that a migration has already been applied manually or outside of Tiny Migrations.
+
+```python
+tm.stamp("001", "Stamp test migration")
+```
+
+---
+
 ## Troubleshooting
 
 - If you get a dependency error, check the order and `depends_on` attributes.

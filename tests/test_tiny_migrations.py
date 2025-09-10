@@ -199,3 +199,26 @@ def test_insert_and_update_data_with_migrations(db_connection):
     cursor.execute("SELECT name, price FROM products;")
     row = cursor.fetchone()
     assert row == ("Widget", 12.49)
+
+
+def test_stamp_migration(db_connection):
+    tm = TinyMigrations(db_connection)
+    tm.stamp("001", "Stamp test migration")
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT unique_id FROM migrations;")
+    rows = cursor.fetchall()
+    assert [row[0] for row in rows] == ["001"]
+
+
+def test_stamp_duplicate_migration(db_connection, caplog):
+    tm = TinyMigrations(db_connection)
+    tm.stamp("001", "Stamp test migration")
+    # Try to stamp again
+    with caplog.at_level("ERROR"):
+        tm.stamp("001", "Stamp test migration")
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM migrations WHERE unique_id='001';")
+    count = cursor.fetchone()[0]
+    assert count == 1
+    # Should log error
+    assert any("already stamped" in msg for msg in caplog.messages)

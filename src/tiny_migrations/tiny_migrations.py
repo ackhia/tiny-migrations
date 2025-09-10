@@ -108,3 +108,27 @@ class TinyMigrations:
             if m.unique_id == target_migration:
                 logging.debug(f"Reached target migration {target_migration}. Stopping.")
                 break
+
+    def stamp(self, unique_id: str, description: str = "Stamped without applying."):
+        """
+        Stamp the database with a migration unique_id without applying it.
+
+        Args:
+            unique_id (str): The unique ID of the migration to stamp as applied.
+            description (str): Description for the stamped migration.
+        """
+        applied_migrations = self._read_applied_migrations()
+        if unique_id in applied_migrations:
+            logging.error(f"Migration {unique_id} already stamped. Skipping.")
+            return
+
+        logging.debug(f"Stamping migration {unique_id}: {description}")
+        try:
+            cur = self.db_connection.cursor()
+            cur.execute(
+                "INSERT INTO migrations (unique_id, description) VALUES (?, ?);",
+                (unique_id, description),
+            )
+            self.db_connection.commit()
+        finally:
+            cur.close()
