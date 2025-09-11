@@ -41,7 +41,7 @@ class TinyMigrations:
         finally:
             cur.close()
 
-    def _read_applied_migrations(self) -> list[str]:
+    def get_applied_migrations(self) -> list[str]:
         """
         Read the list of applied migration unique IDs from the database.
 
@@ -81,7 +81,7 @@ class TinyMigrations:
             migrations (List[MigrationBase]): List of migration objects in dependency order.
             target_migration (str | None): Unique ID of the target migration, or "latest" for all.
         """
-        applied_migrations = self._read_applied_migrations()
+        applied_migrations = self.get_applied_migrations()
         start = len(applied_migrations) == 0
         for i, m in enumerate(migrations):
             if i == 0:
@@ -117,7 +117,7 @@ class TinyMigrations:
             unique_id (str): The unique ID of the migration to stamp as applied.
             description (str): Description for the stamped migration.
         """
-        applied_migrations = self._read_applied_migrations()
+        applied_migrations = self.get_applied_migrations()
         if unique_id in applied_migrations:
             logging.error(f"Migration {unique_id} already stamped. Skipping.")
             return
